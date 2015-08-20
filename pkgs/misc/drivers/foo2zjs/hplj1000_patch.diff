@@ -1,0 +1,103 @@
+--- a/hplj1000
++++ b/hplj1000
+@@ -43,12 +43,9 @@ DEV=""
+ # Path to the USB CUPS backend. We use this backend to upload the firmware
+ # into the printer when we are on a CUPS/libusb-based system.
+ #
+-USB_BACKEND=/usr/lib/cups/backend/usb
+ 
+-#
+-# Directory to find downloadable HP firmware files sihpMMMM.dl
+-#
+-FWDIR=/usr/share/foo2zjs/firmware
++USB_BACKEND=/usr/lib/cups/backend/usb
++FOO2ZJS_DATADIR=/usr/share
+ 
+ #
+ # Program used to determine USB printer id information
+@@ -90,57 +87,61 @@ case "$0" in
+     MODEL=P1005; FWMODEL=$MODEL
+     USB1=0x03f0	#Vendor
+     USB2=0x3d17	#Model
+-    FWDIR=/usr/share/foo2xqx/firmware
++    DRIVER=foo2xqx
+     ;;
+ *P1006)
+     MODEL=P1006; FWMODEL=$MODEL
+     USB1=0x03f0	#Vendor
+     USB2=0x3e17	#Model
+-    FWDIR=/usr/share/foo2xqx/firmware
++    DRIVER=foo2xqx
+     ;;
+ *P1007)
+     MODEL=P1007; FWMODEL=P1005		# Alias
+     USB1=0x03f0	#Vendor
+     USB2=0x4817	#Model
+-    FWDIR=/usr/share/foo2xqx/firmware
++    DRIVER=foo2xqx
+     ;;
+ *P1008)
+     MODEL=P1008; FWMODEL=P1006		# Alias
+     USB1=0x03f0	#Vendor
+     USB2=0x4917	#Model
+-    FWDIR=/usr/share/foo2xqx/firmware
++    DRIVER=foo2xqx
+     ;;
+ *P1505)
+     MODEL=P1505; FWMODEL=$MODEL
+     USB1=0x03f0	#Vendor
+     USB2=0x3f17	#Model
+-    FWDIR=/usr/share/foo2xqx/firmware
++    DRIVER=foo2xqx
+     ;;
+ *P1505n)
+     MODEL=P1505n; FWMODEL=$MODEL
+     USB1=0x03f0	#Vendor
+     USB2=0x4017	#Model
+-    FWDIR=/usr/share/foo2xqx/firmware
++    DRIVER=foo2xqx
+     ;;
+ *1000)
+     MODEL=1000; FWMODEL=$MODEL
+     USB1=0x03f0	#Vendor
+     USB2=0x0517	#Model
++    DRIVER=foo2zjs
+     ;;
+ *1005)
+     MODEL=1005; FWMODEL=$MODEL
+     USB1=0x03f0	#Vendor
+     USB2=0x1317	#Model
++    DRIVER=foo2zjs
+     ;;
+ *1018)
+     MODEL=1018; FWMODEL=$MODEL
+     USB1=0x03f0 #Vendor
+     USB2=0x4117 #Model
++    DRIVER=foo2zjs
+     ;;
+ *1020)
+     MODEL=1020; FWMODEL=$MODEL
+     USB1=0x03f0 #Vendor
+     USB2=0x2b17 #Model
++    DRIVER=foo2zjs
+     ;;
+ *)
+     log "Only HP LaserJet 100[05],1018,1020,P100[5678],P1505 are supported"
+@@ -213,7 +214,7 @@ esac
+ #
+ load_usblp() {
+     _dev="$1"
+-    fw="$FWDIR/sihp$FWMODEL.dl"
++    fw="${FOO2ZJS_DATADIR}/$DRIVER/firmware/sihp$FWMODEL.dl"
+     if [ ! -f "$fw" ]; then
+ 	log "Missing HP LaserJet $MODEL firmware file $fw"
+ 	log "...read foo2zjs installation instructions and run ./getweb $MODEL"
+@@ -233,7 +234,7 @@ load_usblp() {
+ }
+ 
+ load_cups() {
+-    fw="$FWDIR/sihp$FWMODEL.dl"
++    fw="${FOO2ZJS_DATADIR}/$DRIVER/firmware/sihp$FWMODEL.dl"
+     if [ ! -f "$fw" ]; then
+ 	log "Missing HP LaserJet $MODEL firmware file $fw"
+ 	log "...read foo2zjs installation instructions and run ./getweb $MODEL"
