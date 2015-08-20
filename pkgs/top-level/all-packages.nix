@@ -18887,6 +18887,8 @@ with pkgs;
 
   foo2zjs = callPackage ../misc/drivers/foo2zjs {};
 
+  foo2zjs_20150803 = callPackage ../misc/drivers/foo2zjs/default-20150803.nix {};
+  
   foomatic-filters = callPackage ../misc/drivers/foomatic-filters {};
 
   gajim = callPackage ../applications/networking/instant-messengers/gajim { };
