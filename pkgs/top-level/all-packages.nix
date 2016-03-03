@@ -15383,6 +15383,8 @@ with pkgs;
 
   antimony = libsForQt5.callPackage ../applications/graphics/antimony {};
 
+  amsynth = callPackage ../applications/audio/amsynth { };
+  
   antiword = callPackage ../applications/office/antiword {};
 
   ao = callPackage ../applications/graphics/ao {};
