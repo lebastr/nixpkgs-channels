@@ -1,79 +1,53 @@
-{ stdenv, fetchurl, glibc, mesa, freetype, glib, libSM, libICE, libXi, libXv
-, libXrender, libXrandr, libXfixes, libXcursor, libXinerama, libXext, libX11, qt4
-, zlib, fontconfig, dpkg }:
+{ stdenv, fetchurl, mesa, freetype, glib, libSM, libICE
+, libXrender, libXext, libX11, zlib, fontconfig, makeWrapper }:
 
-let
-  arch =
-    if stdenv.system == "x86_64-linux" then "amd64"
-    else if stdenv.system == "i686-linux" then "i386"
-    else abort "Unsupported architecture";
-  sha256 =
-    if arch == "amd64"
-    then "0dwnppn5snl5bwkdrgj4cyylnhngi0g66fn2k41j3dvis83x24k6"
-    else "0gndbxrj3kgc2dhjqwjifr3cl85hgpm695z0wi01wvwzhrjqs0l2";
-  fullPath = stdenv.lib.makeLibraryPath [
-    glibc
-    glib
+stdenv.mkDerivation (rec {
+  name = "googleearth-7.1.7.2606";
+
+  src = ../../../../binaries/google-earth-stable_current_amd64.deb;
+  
+  buildInputs = [
+    makeWrapper
+  ];
+
+  ldLibraryPath = stdenv.lib.makeLibraryPath [
     stdenv.cc.cc
-    libSM
-    libICE
-    libXi
-    libXv
+    glib
+    libSM 
+    libICE 
     mesa
-    libXrender
-    libXrandr
-    libXfixes
-    libXcursor
-    libXinerama
-    freetype
-    libXext
-    libX11
-    qt4
+    libXrender 
+    freetype 
+    libXext 
+    libX11 
     zlib
     fontconfig
   ];
-in
-stdenv.mkDerivation rec {
-  version = "7.1.4.1529";
-  name = "googleearth-${version}";
-
-  src = fetchurl {
-    url = "https://dl.google.com/earth/client/current/google-earth-stable_current_${arch}.deb";
-    inherit sha256;
-  };
 
   phases = "unpackPhase installPhase";
-
-  buildInputs = [ dpkg ];
-
+  
   unpackPhase = ''
-    dpkg-deb -x ${src} ./
+    ar vx $src
+    xz -d data.tar.xz
+    tar -xf data.tar
   '';
-
+  
   installPhase =''
-    mkdir $out
-    mv usr/* $out/
-    rmdir usr
-    mv * $out/
-    rm $out/bin/google-earth $out/opt/google/earth/free/google-earth
-    ln -s $out/opt/google/earth/free/googleearth $out/bin/google-earth
-
+    mkdir -p $out/{opt/googleearth/,bin}
+    cp -rv opt/google/earth/free/* $out/opt/googleearth
     patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
-      --set-rpath "${fullPath}:\$ORIGIN" \
-      $out/opt/google/earth/free/googleearth-bin
+      $out/opt/googleearth/googleearth-bin
 
-    for a in $out/opt/google/earth/free/*.so* ; do
-      patchelf --set-rpath "${fullPath}:\$ORIGIN" $a
-    done
+    wrapProgram $out/opt/googleearth/googleearth --prefix LD_LIBRARY_PATH : $ldLibraryPath \
+        --prefix GOOGLEEARTH_DATA_PATH : $out/opt/googleearth
+
+    ln -s $out/opt/googleearth/googleearth $out/bin/googleearth
   '';
-
-  dontPatchELF = true;
 
   meta = {
     description = "A world sphere viewer";
     homepage = http://earth.google.com;
     license = stdenv.lib.licenses.unfree;
     maintainers = [ stdenv.lib.maintainers.viric ];
-    platforms = stdenv.lib.platforms.linux;
   };
-}
+})
