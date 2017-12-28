@@ -54,13 +54,13 @@ in stdenv.mkDerivation {
   installFlags = [ "install-hotplug" ];
 
   copy_firmwares = map fetchurl 
-                   [ { url = http://foo2zjs.rkkda.com/firmware/sihp1000.tar.gz; md5 = "eb7f6e1edfec313e6ca23abd27a0d1c2"; }
-                     { url = http://foo2zjs.rkkda.com/firmware/sihp1005.tar.gz; md5 = "04f7bd2eec09131371e27403626f38b5"; }
-		     { url = http://foo2zjs.rkkda.com/firmware/sihp1018.tar.gz; md5 = "bf61f2ce504b233f999bc358f5a79499"; }
-		     { url = http://foo2zjs.rkkda.com/firmware/sihp1020.tar.gz; md5 = "1d408fa44fb43f2f5f8c8f7eabcc70c6"; }
-		     { url = http://foo2zjs.rkkda.com/firmware/sihpP1005.tar.gz; md5 = "aea4d27086db3d84b94c3fae8d98085c"; }
-		     { url = http://foo2zjs.rkkda.com/firmware/sihpP1006.tar.gz; md5 = "df4b0b84c6feb0d45f64d7fc219895a5"; }
-		     { url = http://foo2zjs.rkkda.com/firmware/sihpP1505.tar.gz; md5 = "6022a2fd13c7c77df4320d3b912610c9"; } ];
+                   [ { url = http://foo2zjs.rkkda.com/firmware/sihp1018.tar.gz; sha256 = "10pc60cg0r5api9964al3a8pqnlsfy2jdxc74fca28crbjmsh90w"; }
+		     { url = http://foo2zjs.rkkda.com/firmware/sihp1000.tar.gz; sha256 = "1xjm75ahgwx4k35ysamxlsz0h1k1inxsfwc97i79lx79jjgsr931"; }
+                     { url = http://foo2zjs.rkkda.com/firmware/sihp1005.tar.gz; sha256 = "1cz7riaavrkh58g9zfjin2lm3cnwjl2m595qqd52g2lr9mhspmj2"; }
+		     { url = http://foo2zjs.rkkda.com/firmware/sihp1020.tar.gz; sha256 = "0rpri6pdyjx86gsh8jsh6304k55w3dpv06xpmv7v6bacf336aipc"; }
+		     { url = http://foo2zjs.rkkda.com/firmware/sihpP1005.tar.gz; sha256 = "183jx1fvzq509glb1hyby0kb3q0ayls7h39jiai9k2s119aln3m2"; }
+		     { url = http://foo2zjs.rkkda.com/firmware/sihpP1006.tar.gz; sha256 = "13ygbg71mxp3228k0c2lla07rs0kmfnzhplbn5wcbjn4dy9fdvxr"; }
+		     { url = http://foo2zjs.rkkda.com/firmware/sihpP1505.tar.gz; sha256 = "12z5b4vbwchfrq4bwymwscdrl8j4zrc1hjp3ljlr7dpb05nr2017"; } ];
 
 
   preInstall = ''
