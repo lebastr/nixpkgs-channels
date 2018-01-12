@@ -26321,6 +26321,8 @@ EOF
     cudnn = pkgs.cudnn51_cudatoolkit80;
   };
 
+  tensorboard_pytorch = callPackage ../development/python-modules/tensorboard-pytorch { };
+    
   tflearn = buildPythonPackage rec {
     name = "tflearn-0.2.1";
 
