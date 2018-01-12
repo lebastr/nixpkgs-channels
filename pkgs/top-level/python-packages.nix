@@ -16812,6 +16812,8 @@ EOF
 
   tflearn = callPackage ../development/python-modules/tflearn { };
 
+  tensorboard_pytorch = callPackage ../development/python-modules/tensorboard-pytorch { };
+
   simpleai = buildPythonPackage rec {
      version = "0.7.11";
      name = "simpleai-${version}";
