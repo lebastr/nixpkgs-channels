@@ -13,9 +13,9 @@ buildPythonPackage rec {
     sha256 = "0adm1zf3b4gf8yjriidjnl9abcycqiy5bzannwyb8rcbh3jwdbzv";
   };
 
-  buildInputs = [ nose ];
+  buildInputs = [ nose ] ++ lib.optional (pythonOlder "3.0") enum34;
     
-  propagatedBuildInputs = [ numpy ] ++ lib.optional isPy27 futures ++ lib.optional (pythonOlder "3.0") enum34;
+  propagatedBuildInputs = [ numpy ] ++ lib.optional isPy27 futures;
 
   meta = {
     description = "Read and write image data from and to TIFF files.";
