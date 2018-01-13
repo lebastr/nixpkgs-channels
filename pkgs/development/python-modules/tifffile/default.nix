@@ -5,6 +5,8 @@ buildPythonPackage rec {
   pname = "tifffile";
   version = "0.13.0";
 
+  name = "${pname}-${version}";
+  
   src = fetchPypi {
     inherit pname version;
     sha256 = "1rqx2bar6dcsbmzq68mjh5bsyjzhbkqxi2dsv7j0vdbnjs5dfq9q";
