@@ -16887,6 +16887,9 @@ in {
 
     doCheck = false;
 
+    propagatedBuildInputs = with self; [ pkgs.fontconfig ];
+
+
     meta = {
       homepage = "http://www.pyglet.org/";
       description = "A cross-platform windowing and multimedia library";
@@ -16895,6 +16898,27 @@ in {
     };
   };
 
+  cocos2d  = buildPythonPackage rec {
+    name = "cocos2d-${version}";
+    version = "0.6.5";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/c/cocos2d/cocos2d-${version}.tar.gz";
+      sha256 = "0jbbc0r44878dcbz97z40b35wzvyxgd80v9pbw1r55ym2sb442rd";
+    };
+
+    doCheck = false;
+
+    buildInputs = with self; [ pyglet six ];
+    
+    meta = {
+      homepage = "http://python.cocos2d.org/";
+      description = "cocos2d is a framework for building 2D games, demos, and other graphical/interactive applications";
+      # license = licenses.bsd3;
+      # platforms = platforms.mesaPlatforms;
+    };
+  };
+  
   pygments = callPackage ../development/python-modules/Pygments { };
 
   # For Pelican 3.6.3
