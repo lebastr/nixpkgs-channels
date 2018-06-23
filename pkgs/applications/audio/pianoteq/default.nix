@@ -8,9 +8,9 @@ let
        "x86_64-linux" = "amd64";
     }."${stdenv.system}" or (throw "system ${stdenv.system} not supported");
 
-  pSet = { name = "pianoteq-v581";
-	   executablePath = "Pianoteq 5/amd64/Pianoteq 5";
-	   lv2Path = "Pianoteq 5/amd64/Pianoteq 5.lv2";
+  pSet = { name = "pianoteq-v621";
+	   executablePath = "Pianoteq 6/amd64/Pianoteq 6";
+	   lv2Path = "Pianoteq 6/amd64/Pianoteq 6.lv2";
 	 } // pianoteqSet;
 
 in
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
 
   buildInputs = [ p7zip ];
 
-  src = ../../../../binaries/pianoteq/pianoteq_linux_trial_v581.7z;
+  src = ../../../../binaries/pianoteq/pianoteq_linux_trial_v621.7z;
   phases = [ "unpackPhase" "installPhase" "fixupPhase" ];
 
   unpackPhase = "7z x $src";
