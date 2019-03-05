@@ -301,7 +301,7 @@ let
       NFS_V4_SECURITY_LABEL = yes;
 
       CIFS_XATTR        = yes;
-      CIFS_POSIX        = yes;
+      CIFS_POSIX        = option yes;
       CIFS_FSCACHE      = yes;
       CIFS_STATS        = whenOlder "4.19" yes;
       CIFS_WEAK_PW_HASH = yes;
@@ -638,6 +638,7 @@ let
       MEGARAID_NEWGEN       = yes;
 
       MLX4_EN_VXLAN = whenOlder "4.8" yes;
+      MLX5_CORE_EN       = option yes;
 
       MODVERSIONS        = whenOlder "4.9" yes;
       MOUSE_PS2_ELANTECH = yes; # Elantech PS/2 protocol extension

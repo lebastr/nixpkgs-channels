@@ -712,7 +712,8 @@ in {
   # argparse is part of stdlib in 2.7 and 3.2+
   argparse = null;
 
-  astroid = callPackage ../development/python-modules/astroid { };
+  astroid = if isPy3k then callPackage ../development/python-modules/astroid { }
+            else callPackage ../development/python-modules/astroid/1.6.nix { };
 
   attrdict = callPackage ../development/python-modules/attrdict { };
 
@@ -4569,29 +4570,7 @@ in {
     gdal = self.gdal;
   };
 
-  django_1_8 = buildPythonPackage rec {
-    name = "Django-${version}";
-    version = "1.8.18";
-    disabled = pythonOlder "2.7";
-
-    src = pkgs.fetchurl {
-      url = "http://www.djangoproject.com/m/releases/1.8/${name}.tar.gz";
-      sha256 = "1ishvbihr9pain0486qafb18dnb7v2ppq34nnx1s8f95bvfiqqf7";
-    };
-
-    # too complicated to setup
-    doCheck = false;
-
-    # patch only $out/bin to avoid problems with starter templates (see #3134)
-    postFixup = ''
-      wrapPythonProgramsIn $out/bin "$out $pythonPath"
-    '';
-
-    meta = {
-      description = "A high-level Python Web framework";
-      homepage = https://www.djangoproject.com/;
-    };
-  };
+  django_1_8 = callPackage ../development/python-modules/django/1_8.nix { };
 
   django-allauth = callPackage ../development/python-modules/django-allauth { };
 
@@ -4685,7 +4664,7 @@ in {
   django_tagging = callPackage ../development/python-modules/django_tagging { };
 
   django_tagging_0_4_3 = if
-       self.django.version != "1.8.18"
+       self.django.version != "1.8.19"
   then throw "django_tagging_0_4_3 should be build with django_1_8"
   else (callPackage ../development/python-modules/django_tagging {}).overrideAttrs (attrs: rec {
     pname = "django-tagging";
@@ -7956,7 +7935,9 @@ in {
     };
   };
 
-  pygraphviz = callPackage ../development/python-modules/pygraphviz { };
+  pygraphviz = callPackage ../development/python-modules/pygraphviz {
+    graphviz = pkgs.graphviz; # not the python package
+  };
 
   pymc3 = callPackage ../development/python-modules/pymc3 { };
 
@@ -8148,13 +8129,13 @@ in {
 
   slixmpp = buildPythonPackage rec {
     name = "slixmpp-${version}";
-    version = "1.2.4.post1";
+    version = "1.4.0";
 
     disabled = pythonOlder "3.4";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/s/slixmpp/${name}.tar.gz";
-      sha256 = "0v6430dczai8a2nmznhja2dxl6pxa8c5j20nhc5737bqjg7245jk";
+      sha256 = "155qxx4xlkkjb4hphc09nsi2mi4xi3m2akg0z7064kj3nbzkwjn2";
     };
 
     patchPhase = ''
@@ -9418,22 +9399,7 @@ in {
     inherit (pkgs) glibcLocales git;
   };
 
-  pep8 = buildPythonPackage rec {
-    name = "pep8-${version}";
-    version = "1.7.0";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pep8/${name}.tar.gz";
-      sha256 = "a113d5f5ad7a7abacef9df5ec3f2af23a20a28005921577b15dd584d099d5900";
-    };
-
-    meta = {
-      homepage = "http://pep8.readthedocs.org/";
-      description = "Python style guide checker";
-      license = licenses.mit;
-      maintainers = with maintainers; [ garbas ];
-    };
-  };
+  pep8 = callPackage ../development/python-modules/pep8 { };
 
   pep257 = callPackage ../development/python-modules/pep257 { };
 
@@ -10362,7 +10328,8 @@ in {
 
   pygpgme = callPackage ../development/python-modules/pygpgme { };
 
-  pylint = callPackage ../development/python-modules/pylint { };
+  pylint = if isPy3k then callPackage ../development/python-modules/pylint { }
+           else callPackage ../development/python-modules/pylint/1.9.nix { };
 
   pyopencl = callPackage ../development/python-modules/pyopencl { };
 
@@ -16262,21 +16229,18 @@ EOF
 
   poezio = buildPythonApplication rec {
     name = "poezio-${version}";
-    version = "0.11";
+    version = "0.12";
 
     disabled = pythonOlder "3.4";
 
     buildInputs = with self; [ pytest ];
-    propagatedBuildInputs = with self ; [ aiodns slixmpp pyinotify potr mpd2 ];
+    propagatedBuildInputs = with self ; [ aiodns slixmpp pyinotify potr mpd2 cffi ];
+    nativeBuildInputs = with pkgs; [ pkgconfig ];
 
     src = pkgs.fetchurl {
-      url = "http://dev.louiz.org/attachments/download/118/${name}.tar.gz";
-      sha256 = "07cn3717swarjv47yw8x95bvngz4nvlyyy9m7ck9fhycjgdy82r0";
+      url = "http://dev.louiz.org/attachments/download/129/${name}.tar.gz";
+      sha256 = "11n9x82xyjwbqk28lsfnvqwn8qc9flv6w2c64camh6j3148ykpvz";
     };
-
-    patches = [
-      ../development/python-modules/poezio/fix_gnupg_import.patch
-    ];
 
     checkPhase = ''
       py.test
@@ -17327,17 +17291,9 @@ EOF
 
   rfc7464 = callPackage ../development/python-modules/rfc7464 { };
 
-  foundationdb51 = (toPythonModule (pkgs.fdbPackages.override {
-    inherit python;
-  }).foundationdb51).python;
-
-  foundationdb52 = (toPythonModule (pkgs.fdbPackages.override {
-    inherit python;
-  }).foundationdb52).python;
-
-  foundationdb60 = (toPythonModule (pkgs.fdbPackages.override {
-    inherit python;
-  }).foundationdb60).python;
+  foundationdb51 = callPackage ../servers/foundationdb/python.nix { foundationdb = pkgs.foundationdb51; };
+  foundationdb52 = callPackage ../servers/foundationdb/python.nix { foundationdb = pkgs.foundationdb52; };
+  foundationdb60 = callPackage ../servers/foundationdb/python.nix { foundationdb = pkgs.foundationdb60; };
 
   libtorrentRasterbar = (toPythonModule (pkgs.libtorrentRasterbar.override {
     inherit python;

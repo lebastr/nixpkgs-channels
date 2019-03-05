@@ -42,6 +42,7 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
   amd = {
     fullName = "AMD License Agreement";
     url = http://developer.amd.com/amd-license-agreement/;
+    free = false;
   };
 
   apsl20 = spdx {
@@ -99,14 +100,10 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
     fullName = ''BSD 4-clause "Original" or "Old" License'';
   };
 
-  bsl10 = {
-    fullName = "Business Source License 1.0";
-    url = https://mariadb.com/bsl10;
-  };
-
   bsl11 = {
     fullName = "Business Source License 1.1";
     url = https://mariadb.com/bsl11;
+    free = false;
   };
 
   clArtistic = spdx {
@@ -307,6 +304,12 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
   gpl2 = spdx {
     spdxId = "GPL-2.0";
     fullName = "GNU General Public License v2.0 only";
+  };
+
+  gpl2Classpath = {
+    spdxId = "GPL-2.0-with-classpath-exception";
+    fullName = "GNU General Public License v2.0 only (with Classpath exception)";
+    url = https://fedoraproject.org/wiki/Licensing/GPL_Classpath_Exception;
   };
 
   gpl2ClasspathPlus = {

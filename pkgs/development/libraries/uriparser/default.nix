@@ -1,16 +1,16 @@
-{ stdenv, fetchurl, cpptest, pkgconfig, doxygen, graphviz }:
+{ stdenv, fetchurl, gtest, pkgconfig, doxygen, graphviz }:
 
 stdenv.mkDerivation rec {
   name = "uriparser-${version}";
-  version = "0.8.6";
+  version = "0.9.1";
 
   # Release tarball differs from source tarball
   src = fetchurl {
     url = "https://github.com/uriparser/uriparser/releases/download/${name}/${name}.tar.bz2";
-    sha256 = "0m2a5bf5b00ybagxmsa8mdj9mhc62vcm0qimy1ivfza1fbjsf287";
+    sha256 = "1gisi7h8hd6mswbiaaa3s25bnb77xf37pzrmjy63rcdpwcyqy93m";
   };
 
-  nativeBuildInputs = [ pkgconfig cpptest doxygen graphviz ];
+  nativeBuildInputs = [ pkgconfig gtest doxygen graphviz ];
 
   doCheck = true;
 

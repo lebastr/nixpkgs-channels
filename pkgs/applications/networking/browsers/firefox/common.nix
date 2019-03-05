@@ -10,6 +10,7 @@
 , hunspell, libevent, libstartup_notification, libvpx
 , icu, libpng, jemalloc, glib
 , autoconf213, which, gnused, cargo, rustc, llvmPackages
+, rust-cbindgen, rust-cbindgen_0_6_7, nodejs, rust_1_29
 , debugBuild ? false
 
 ### optionals
@@ -106,19 +107,33 @@ stdenv.mkDerivation (rec {
                                      AVFoundation MediaToolbox CoreLocation
                                      Foundation libobjc AddressBook cups ];
 
-  NIX_CFLAGS_COMPILE = [ "-I${nspr.dev}/include/nspr"
-                         "-I${nss.dev}/include/nss"
-                         "-I${glib.dev}/include/gio-unix-2.0" ]
-                      ++ lib.optional stdenv.isDarwin [
-                         "-isystem ${llvmPackages.libcxx}/include/c++/v1"
-                         "-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_10" ];
+  NIX_CFLAGS_COMPILE = [
+    "-I${glib.dev}/include/gio-unix-2.0"
+  ]
+  ++ lib.optionals (!isTorBrowserLike) [
+    "-I${nss.dev}/include/nss"
+  ]
+  ++ lib.optional stdenv.isDarwin [
+    "-isystem ${llvmPackages.libcxx}/include/c++/v1"
+    "-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_10"
+  ];
 
   postPatch = lib.optionalString stdenv.isDarwin ''
     substituteInPlace js/src/jsmath.cpp --replace 'defined(HAVE___SINCOS)' 0
+  '' + lib.optionalString (lib.versionAtLeast version "63.0" && !isTorBrowserLike) ''
+    substituteInPlace third_party/prio/prio/rand.c --replace 'nspr/prinit.h' 'prinit.h'
   '';
 
   nativeBuildInputs =
-    [ autoconf213 which gnused pkgconfig perl python2 cargo rustc ]
+    [ autoconf213 which gnused pkgconfig perl python2 ]
+    ++ (if (lib.versionAtLeast version "63") then [
+      nodejs rust_1_29.rustc rust_1_29.cargo
+    ] else [ cargo rustc ])
+    ++ (if (lib.versionAtLeast version "64") then [
+      rust-cbindgen_0_6_7
+    ] else [
+      rust-cbindgen
+    ])
     ++ lib.optional gtk3Support wrapGAppsHook
     ++ lib.optionals stdenv.isDarwin [ xcbuild rsync ]
     ++ extraNativeBuildInputs;
@@ -160,6 +175,10 @@ stdenv.mkDerivation (rec {
     configureFlagsArray+=("--with-google-api-keyfile=$TMPDIR/ga")
   '' + lib.optionalString (lib.versionOlder version "58") ''
     cd obj-*
+  ''
+  # AS=as in the environment causes build failure https://bugzilla.mozilla.org/show_bug.cgi?id=1497286
+  + lib.optionalString (lib.versionAtLeast version "64") ''
+    unset AS
   '';
 
   configureFlags = [
@@ -181,10 +200,10 @@ stdenv.mkDerivation (rec {
     "--disable-necko-wifi" # maybe we want to enable this at some point
     "--disable-updater"
     "--enable-jemalloc"
-    "--disable-maintenance-service"
     "--disable-gconf"
     "--enable-default-toolkit=${default-toolkit}"
   ]
+  ++ lib.optional (lib.versionOlder version "64") "--disable-maintenance-service"
   ++ lib.optional (stdenv.isDarwin && lib.versionAtLeast version "61") "--disable-xcode-checks"
   ++ lib.optional (lib.versionOlder version "61") "--enable-system-hunspell"
   ++ lib.optionals (lib.versionAtLeast version "56") [
