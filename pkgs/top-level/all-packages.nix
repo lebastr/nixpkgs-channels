@@ -3720,7 +3720,7 @@ in
     inherit (darwin.apple_sdk.frameworks) AVFoundation AudioToolbox ImageIO CoreMedia Foundation CoreGraphics MediaToolbox;
   };
 
-  kbfs = callPackage ../tools/security/kbfs { };
+  kbfs = callPackage ../tools/security/keybase/kbfs.nix { };
 
   keybase-gui = callPackage ../tools/security/keybase/gui.nix { };
 
@@ -4238,6 +4238,8 @@ in
   memtier-benchmark = callPackage ../tools/networking/memtier-benchmark { };
 
   memtest86 = callPackage ../tools/misc/memtest86 { };
+
+  memtest86-efi = callPackage ../tools/misc/memtest86-efi { };
 
   memtest86plus = callPackage ../tools/misc/memtest86+ { };
 
@@ -7600,6 +7602,15 @@ in
   });
   inherit (rust) cargo rustc;
 
+  rust_1_35 = callPackage ../development/compilers/rust-1_35 ({
+    inherit (darwin.apple_sdk.frameworks) CoreFoundation Security;
+    llvm = llvm_7;
+  } // stdenv.lib.optionalAttrs (stdenv.cc.isGNU && stdenv.hostPlatform.isi686) {
+    stdenv = overrideCC stdenv gcc6; # with gcc-7: undefined reference to `__divmoddi4'
+  });
+  cargo_1_35 = rust_1_35.cargo;
+  rustc_1_35 = rust_1_35.rustc;
+
   buildRustCrate = callPackage ../build-support/rust/build-rust-crate { };
   buildRustCrateHelpers = callPackage ../build-support/rust/build-rust-crate/helpers.nix { };
   buildRustCrateTests = recurseIntoAttrs (callPackage ../build-support/rust/build-rust-crate/test { }).tests;
@@ -8557,9 +8568,9 @@ in
   #     };
   # You can use a different directory, but whichever directory you choose
   # should be owned by user root, group nixbld with permissions 0770.
-  ccacheWrapper = makeOverridable ({ extraConfig ? "" }:
-     wrapCC (ccache.links extraConfig)) {};
-  ccacheStdenv = lowPrio (overrideCC stdenv ccacheWrapper);
+  ccacheWrapper = makeOverridable ({ extraConfig ? "", unwrappedCC ? stdenv.cc.cc }:
+     wrapCC (ccache.links {inherit unwrappedCC extraConfig;})) {};
+  ccacheStdenv = lowPrio (overrideCC stdenv buildPackages.ccacheWrapper);
 
   cccc = callPackage ../development/tools/analysis/cccc { };
 
@@ -11063,6 +11074,8 @@ in
 
   libguestfs-appliance = callPackage ../development/libraries/libguestfs/appliance.nix {};
   libguestfs = callPackage ../development/libraries/libguestfs { };
+  libguestfs-with-appliance = libguestfs.override { appliance = libguestfs-appliance; };
+
 
   libhangul = callPackage ../development/libraries/libhangul { };
 
@@ -13536,7 +13549,9 @@ in
 
     mod_python = callPackage ../servers/http/apache-modules/mod_python { };
 
-    mod_wsgi = callPackage ../servers/http/apache-modules/mod_wsgi { };
+    mod_wsgi  = self.mod_wsgi2;
+    mod_wsgi2 = callPackage ../servers/http/apache-modules/mod_wsgi { python = python2; ncurses = null; };
+    mod_wsgi3 = callPackage ../servers/http/apache-modules/mod_wsgi { python = python3; };
 
     php = pkgs.php.override { inherit apacheHttpd; };
 
@@ -14743,6 +14758,14 @@ in
       ];
   };
 
+  linux_5_2 = callPackage ../os-specific/linux/kernel/linux-5.2.nix {
+    kernelPatches =
+      [ kernelPatches.bridge_stp_helper
+        kernelPatches.modinst_arg_list_too_long
+        kernelPatches.export_kernel_fpu_functions
+      ];
+  };
+
   linux_testing = callPackage ../os-specific/linux/kernel/linux-testing.nix {
     kernelPatches = [
       kernelPatches.bridge_stp_helper
@@ -14926,7 +14949,7 @@ in
   linux = linuxPackages.kernel;
 
   # Update this when adding the newest kernel major version!
-  linuxPackages_latest = linuxPackages_5_1;
+  linuxPackages_latest = linuxPackages_5_2;
   linux_latest = linuxPackages_latest.kernel;
 
   # Build the kernel modules for the some of the kernels.
@@ -14937,6 +14960,7 @@ in
   linuxPackages_4_14 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_14);
   linuxPackages_4_19 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_19);
   linuxPackages_5_1 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_5_1);
+  linuxPackages_5_2 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_5_2);
 
   # When adding to this list:
   # - Update linuxPackages_latest to the latest version
@@ -17345,6 +17369,7 @@ in
   firefox-unwrapped = firefoxPackages.firefox;
   firefox-esr-52-unwrapped = firefoxPackages.firefox-esr-52;
   firefox-esr-60-unwrapped = firefoxPackages.firefox-esr-60;
+  firefox-esr-68-unwrapped = firefoxPackages.firefox-esr-68;
   tor-browser-unwrapped = firefoxPackages.tor-browser;
   icecat-unwrapped = firefoxPackages.icecat;
 
@@ -17352,7 +17377,8 @@ in
   firefox-wayland = wrapFirefox firefox-unwrapped { gdkWayland = true; };
   firefox-esr-52 = wrapFirefox firefox-esr-52-unwrapped { };
   firefox-esr-60 = wrapFirefox firefox-esr-60-unwrapped { };
-  firefox-esr = firefox-esr-60;
+  firefox-esr-68 = wrapFirefox firefox-esr-68-unwrapped { };
+  firefox-esr = firefox-esr-68;
   icecat = wrapFirefox icecat-unwrapped { };
 
   firefox-bin-unwrapped = callPackage ../applications/networking/browsers/firefox-bin {

@@ -468,6 +468,8 @@ in {
 
   logster = callPackage ../development/python-modules/logster { };
 
+  loguru = callPackage ../development/python-modules/loguru { };
+
   logzero = callPackage ../development/python-modules/logzero { };
 
   mail-parser = callPackage ../development/python-modules/mail-parser { };
@@ -526,6 +528,8 @@ in {
   nvchecker = callPackage ../development/python-modules/nvchecker { };
 
   numericalunits = callPackage ../development/python-modules/numericalunits { };
+
+  oath = callPackage ../development/python-modules/oath { };
 
   oauthenticator = callPackage ../development/python-modules/oauthenticator { };
 
@@ -761,6 +765,8 @@ in {
   python-socketio = callPackage ../development/python-modules/python-socketio { };
 
   python-utils = callPackage ../development/python-modules/python-utils { };
+
+  python-vipaccess = callPackage ../development/python-modules/python-vipaccess { };
 
   pytimeparse =  callPackage ../development/python-modules/pytimeparse { };
 
