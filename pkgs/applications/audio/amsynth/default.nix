@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, pkgconfig, gtk2, gtkmm, libjack2, alsaLib }:
+{ stdenv, fetchurl, pkgconfig, gtk2, gtkmm2, libjack2, alsaLib }:
 
 stdenv.mkDerivation rec {
     name = "amsynth-${version}";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
       sha256 = "07dp9dl38g9krjqxxh89l2z42z08yzrl57cx95b1l67xnxwjp5k3";
     };
 
-    buildInputs = [ pkgconfig gtk2 gtkmm libjack2 alsaLib ];
+    buildInputs = [ pkgconfig gtk2 gtkmm2 libjack2 alsaLib ];
 
     meta = with stdenv.lib; {
       homepage = http://amsynth.github.io/;
