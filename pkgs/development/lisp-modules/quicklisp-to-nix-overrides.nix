@@ -56,7 +56,7 @@ in
     propagatedBuildInputs = with pkgs; [mysql.connector-c postgresql sqlite zlib];
     overrides = y: (x.overrides y) // {
       preConfigure = ((x.overrides y).preConfigure or "") + ''
-        export NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE -I${pkgs.mysql.connector-c}/include/mysql"
+        export NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE -I${pkgs.lib.getDev pkgs.mysql.connector-c}/include/mysql"
         export NIX_LDFLAGS="$NIX_LDFLAGS -L${pkgs.mysql.connector-c}/lib/mysql"
       '';
     };
@@ -77,7 +77,14 @@ $out/lib/common-lisp/query-fs"
     };
   };
   cffi = addNativeLibs [pkgs.libffi];
-  cl-mysql = addNativeLibs [pkgs.mysql];
+  cl-mysql = x: {
+    propagatedBuildInputs = [pkgs.mysql.connector-c];
+    overrides = y: (x.overrides y) // {
+      prePatch = ((x.overrides y).prePatch or "") + ''
+        sed -i 's,libmysqlclient_r,${pkgs.mysql.connector-c}/lib/mysql/libmysqlclient_r,' system.lisp
+      '';
+    };
+  };
   cl-ppcre-template = x: {
     overrides = y: (x.overrides y) // {
       postPatch = ''

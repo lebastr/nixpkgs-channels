@@ -7,11 +7,11 @@ with python3.pkgs;
 let
   matrix-synapse-ldap3 = buildPythonPackage rec {
     pname = "matrix-synapse-ldap3";
-    version = "0.1.3";
+    version = "0.1.4";
 
     src = fetchPypi {
       inherit pname version;
-      sha256 = "0a0d1y9yi0abdkv6chbmxr3vk36gynnqzrjhbg26q4zg06lh9kgn";
+      sha256 = "01bms89sl16nyh9f141idsz4mnhxvjrc3gj721wxh1fhikps0djx";
     };
 
     propagatedBuildInputs = [ service-identity ldap3 twisted ];
@@ -23,11 +23,11 @@ let
 
 in buildPythonApplication rec {
   pname = "matrix-synapse";
-  version = "1.5.0";
+  version = "1.9.1";
 
   src = fetchPypi {
     inherit pname version;
-    sha256 = "0skhzbwzq2985frnd86fn2hxhsmy0q1l5p9aich8l2gyg1dd3wb8";
+    sha256 = "13csf18dchm75vw251a7h57diag94vw6rhg8kkkbpi35cibn0cz2";
   };
 
   patches = [

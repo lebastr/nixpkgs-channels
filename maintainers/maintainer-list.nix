@@ -1427,6 +1427,12 @@
     githubId = 245394;
     name = "Hannu Hartikainen";
   };
+  danderson = {
+    email = "dave@natulte.net";
+    github = "danderson";
+    githubId = 1918;
+    name = "David Anderson";
+  };
   danharaj = {
     email = "dan@obsidian.systems";
     github = "danharaj";
@@ -1976,6 +1982,12 @@
   epitrochoid = {
     email = "mpcervin@uncg.edu";
     name = "Mabry Cervin";
+  };
+  equirosa = {
+    email = "eduardo@eduardoquiros.com";
+    github = "equirosa";
+    githubId = 39096810;
+    name = "Eduardo Quiros";
   };
   eqyiel = {
     email = "ruben@maher.fyi";
