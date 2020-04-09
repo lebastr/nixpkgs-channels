@@ -18932,6 +18932,8 @@ in
 
   jack_rack = callPackage ../applications/audio/jack-rack { };
 
+  jacktrip = libsForQt5.callPackage ../applications/audio/jacktrip { };
+
   jackmeter = callPackage ../applications/audio/jackmeter { };
 
   jackmix = callPackage ../applications/audio/jackmix { };
